@@ -1,13 +1,12 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <ESPAsyncWebServer.h>
-#include "DataHandler.h"
 #include <SPIFFS.h>
-
-const char* FILE_NAME = "/forecast.json";
+#include "DataHandler.h"
+#include "Constants.h"
 
 void writeToFile(const String& data) {
-  File file = SPIFFS.open(FILE_NAME, "w");
+  File file = SPIFFS.open(FORECAST_FILE_NAME, "w");
   if (!file) {
     Serial.println("Failed to open file for writing");
     return;
@@ -32,7 +31,7 @@ void getFromEndpoint() {
 }
 
 void readFromEEPROM(AsyncWebServerRequest* request) {
-  File file = SPIFFS.open(FILE_NAME, "r");
+  File file = SPIFFS.open(FORECAST_FILE_NAME, "r");
   if (!file) {
     Serial.println("Failed to open file for reading");
     request->send(200, "text/plain", "Failed to read file");

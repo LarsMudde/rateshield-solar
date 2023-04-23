@@ -5,8 +5,9 @@
 #include <ESPAsync_WiFiManager.h>
 #include <FS.h>
 #include <SPIFFS.h>
-#include "WebServer.h"
 #include <ezTime.h>
+#include "WebServer.h"
+#include "Constants.h"
 
 AsyncWebServer server(80);
 AsyncDNSServer dnsServer;
@@ -22,7 +23,7 @@ void setupFileSystem() {
 
 void setupWiFi() {
   wifiManager = new ESPAsync_WiFiManager(&server, &dnsServer);
-  wifiManager->autoConnect("RateShield Solar", "");
+  wifiManager->autoConnect(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void setupTime() {
@@ -30,7 +31,7 @@ void setupTime() {
   Serial.println("UTC: " + UTC.dateTime());
 
   Timezone myTZ;
-  myTZ.setLocation(F("Europe/Amsterdam")); // Set timezone to Amsterdam
+  myTZ.setLocation(F(TIMEZONE)); // Set timezone to Amsterdam
   Serial.println("Local time: " + myTZ.dateTime());
 }
 
