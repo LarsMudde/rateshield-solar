@@ -98,10 +98,8 @@ bool shouldFetchForecast() {
   strptime(lastFetchDateTimeStr, "%Y-%m-%d %H:%M:%S", &lastFetchTm);
   time_t lastFetchTimestamp = mktime(&lastFetchTm);
 
-  unsigned long oneHour = 60 * 60 * 1000UL;
-
-  if (currentTime - lastFetchTimestamp > oneHour) {
-    Serial.println("Data is more than 1 hour old.");
+  if (currentTime - lastFetchTimestamp > FORECAST_MAX_AGE) {
+    Serial.println("Data is more than 'FORECAST_MAX_AGE' hour(s) old.");
     return true;
   }
 

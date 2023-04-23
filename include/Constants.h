@@ -11,4 +11,7 @@
 // Timezone settings
 #define TIMEZONE "Europe/Amsterdam"
 
+// Maximum age of the forecast file in seconds (1 hour = 3600 seconds)
+#define FORECAST_MAX_AGE 28800
+
 #endif // Constants_h
