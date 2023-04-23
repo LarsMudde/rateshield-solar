@@ -20,6 +20,7 @@ body {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 4px;
+    width: 200px; /* Add this line to set the width to 200px */
   }
   
   button:hover {

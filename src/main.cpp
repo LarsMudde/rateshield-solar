@@ -12,18 +12,19 @@ AsyncDNSServer dnsServer;
 
 ESPAsync_WiFiManager* wifiManager;
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("\nStarting");
-
+void setupFileSystem() {
   if (!SPIFFS.begin(true)) {
     Serial.println("An error has occurred while mounting SPIFFS");
     return;
   }
+}
 
+void setupWiFi() {
   wifiManager = new ESPAsync_WiFiManager(&server, &dnsServer);
   wifiManager->autoConnect("RateShield Solar", "");
+}
 
+void setupWebServer() {
   // Only setup the web server if the Wi-Fi connection is successful
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("Connected to WiFi! IP address: ");
@@ -34,6 +35,15 @@ void setup() {
   } else {
     Serial.println("Failed to connect to Wi-Fi");
   }
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("\nStarting");
+
+  setupFileSystem();
+  setupWiFi();
+  setupWebServer();
 }
 
 void loop() {
