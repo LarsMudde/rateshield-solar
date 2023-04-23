@@ -6,6 +6,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include "WebServer.h"
+#include <ezTime.h>
 
 AsyncWebServer server(80);
 AsyncDNSServer dnsServer;
@@ -24,6 +25,15 @@ void setupWiFi() {
   wifiManager->autoConnect("RateShield Solar", "");
 }
 
+void setupTime() {
+  waitForSync(); // Remove the UTC.begin() line, keep waitForSync()
+  Serial.println("UTC: " + UTC.dateTime());
+
+  Timezone myTZ;
+  myTZ.setLocation(F("Europe/Amsterdam")); // Set timezone to Amsterdam
+  Serial.println("Local time: " + myTZ.dateTime());
+}
+
 void setupWebServer() {
   // Only setup the web server if the Wi-Fi connection is successful
   if (WiFi.status() == WL_CONNECTED) {
@@ -32,8 +42,19 @@ void setupWebServer() {
 
     setupWebServer(&server);
     Serial.println("HTTP server started");
+    setupTime();
   } else {
     Serial.println("Failed to connect to Wi-Fi");
+  }
+}
+
+unsigned long lastSyncTime = 0;
+const unsigned long oneWeek = 7 * 24 * 60 * 60 * 1000UL;
+
+void syncTimeEveryWeek() {
+  if (millis() - lastSyncTime >= oneWeek) {
+    waitForSync();
+    lastSyncTime = millis();
   }
 }
 
@@ -47,4 +68,5 @@ void setup() {
 }
 
 void loop() {
+  syncTimeEveryWeek();
 }

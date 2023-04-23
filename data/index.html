@@ -8,10 +8,28 @@
 </head>
 <body>
   <h1>RateShield Solar Configuration</h1>
+  <div id="date-time"></div>
   <button id="getFromEndpointBtn">Populate forecast.json from endpoint</button>
   <button id="readFromEEPROMBtn">Read forecast.json</button>
   
   <script>
+    function updateTime() {
+      const dateTime = new Date();
+      const options = { 
+        weekday: 'long',
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false, // Set to false to use 24-hour format
+        timeZone: 'Europe/Amsterdam'
+      };
+      const formattedDateTime = dateTime.toLocaleDateString('en-US', options);
+      document.getElementById('date-time').innerHTML = formattedDateTime;
+    }
+
     document.getElementById("getFromEndpointBtn").addEventListener("click", async () => {
       const response = await fetch("/getFromEndpoint");
       const result = await response.text();
@@ -23,6 +41,9 @@
       const result = await response.text();
       console.log(result);
     });
+
+    updateTime(); // Call initially to set the time
+    setInterval(updateTime, 1000); // Update the time every second
   </script>
 </body>
 </html>
