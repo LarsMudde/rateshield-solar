@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles.css">
+  <title>RateShield Solar Configuration</title>
+</head>
+<body>
+  <h1>RateShield Solar Configuration</h1>
+  <button id="getFromEndpointBtn">Get from endpoint</button>
+  <button id="readFromEEPROMBtn">Read from EEPROM</button>
+  
+  <script>
+    document.getElementById("getFromEndpointBtn").addEventListener("click", async () => {
+      const response = await fetch("/getFromEndpoint");
+      const result = await response.text();
+      console.log(result);
+    });
+
+    document.getElementById("readFromEEPROMBtn").addEventListener("click", async () => {
+      const response = await fetch("/readFromEEPROM");
+      const result = await response.text();
+      console.log(result);
+    });
+  </script>
+</body>
+</html>
