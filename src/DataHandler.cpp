@@ -4,15 +4,54 @@
 #include <SPIFFS.h>
 #include "DataHandler.h"
 #include "Constants.h"
+#include <ArduinoJson.h>
+#include <ezTime.h>
 
-void writeToFile(const String& data) {
-  File file = SPIFFS.open(FORECAST_FILE_NAME, "w");
+String addTimestampToJson(const String& apiData) {
+  // Create a new JSON object to store the fetched data and timestamp
+  DynamicJsonDocument doc(2048);
+
+  // Parse the fetched API data
+  DynamicJsonDocument apiDataDoc(1024);
+  deserializeJson(apiDataDoc, apiData);
+
+  // Add the fetched API data to the new JSON object under the "data" property
+  doc["data"] = apiDataDoc.as<JsonObject>();
+
+  // Add the lastFetchDateTime to the JSON
+  Timezone myTZ;
+  myTZ.setLocation(F(TIMEZONE));
+  String formattedDateTime = myTZ.dateTime("Y-m-d H:i:s");
+  doc["lastFetchDateTime"] = formattedDateTime;
+
+  // Serialize the JSON with the added timestamp
+  String updatedData;
+  serializeJson(doc, updatedData);
+
+  return updatedData;
+}
+
+void writeFile(const String& fileName, const String& data) {
+  File file = SPIFFS.open(fileName, "w");
   if (!file) {
     Serial.println("Failed to open file for writing");
     return;
   }
+
+  // Write the data to the file
   file.print(data);
   file.close();
+}
+
+String readFile(const String& fileName) {
+  File file = SPIFFS.open(fileName, "r");
+  if (!file) {
+    Serial.println("Failed to open file for reading");
+    return String();
+  }
+  String data = file.readString();
+  file.close();
+  return data;
 }
 
 void getFromEndpoint() {
@@ -22,7 +61,8 @@ void getFromEndpoint() {
   int httpCode = http.GET();
   if (httpCode > 0) {
     String payload = http.getString();
-    writeToFile(payload);
+    String updatedData = addTimestampToJson(payload);
+    writeFile(FORECAST_FILE_NAME, updatedData);
   } else {
     Serial.printf("GET request failed, error: %s\n", http.errorToString(httpCode).c_str());
   }
@@ -31,13 +71,54 @@ void getFromEndpoint() {
 }
 
 void readFromEEPROM(AsyncWebServerRequest* request) {
-  File file = SPIFFS.open(FORECAST_FILE_NAME, "r");
+  String data = readFile(FORECAST_FILE_NAME);
+  if (!data.isEmpty()) {
+    request->send(200, "text/plain", data);
+  } else {
+    request->send(200, "text/plain", "Failed to read file");
+  }
+}
+
+bool shouldFetchForecast() {
+  if (!SPIFFS.exists(FORECAST_FILE_NAME)) {
+    Serial.println("forecast.json does not exist.");
+    return true;
+  }
+
+  String data = readFile(FORECAST_FILE_NAME);
+  DynamicJsonDocument doc(2048);
+  deserializeJson(doc, data);
+
+  Timezone myTZ;
+  myTZ.setLocation(F(TIMEZONE));
+  unsigned long currentTime = myTZ.now();
+
+  unsigned long lastFetchDateTime = doc["lastFetchDateTime"].as<unsigned long>();
+  unsigned long oneHour = 60 * 60 * 1000UL;
+
+  if (currentTime - lastFetchDateTime > oneHour) {
+    Serial.println("Data is more than 1 hour old.");
+    return true;
+  }
+
+  Serial.println("Data is up-to-date.");
+  return false;
+}
+
+void fetchForecastIfNeeded() {
+  if (shouldFetchForecast()) {
+    Serial.println("Fetching new data.");
+    getFromEndpoint();
+  }
+}
+
+String readFile(const char *filename) {
+  File file = SPIFFS.open(filename, "r");
   if (!file) {
     Serial.println("Failed to open file for reading");
-    request->send(200, "text/plain", "Failed to read file");
-    return;
+    return "";
   }
   String data = file.readString();
   file.close();
-  request->send(200, "text/plain", data);
-}
+  return data;
+} 

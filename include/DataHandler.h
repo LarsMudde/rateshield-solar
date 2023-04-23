@@ -3,7 +3,10 @@
 
 #include <ESPAsyncWebServer.h>
 
+void fetchForecastIfNeeded();
 void getFromEndpoint();
 void readFromEEPROM(AsyncWebServerRequest* request);
+bool shouldFetchForecast();
+String readFile(const char *filename);
 
-#endif // DATAHANDLER_H
+#endif

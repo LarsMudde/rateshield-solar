@@ -7,6 +7,7 @@
 #include <SPIFFS.h>
 #include <ezTime.h>
 #include "WebServer.h"
+#include "DataHandler.h"
 #include "Constants.h"
 
 AsyncWebServer server(80);
@@ -66,6 +67,8 @@ void setup() {
   setupFileSystem();
   setupWiFi();
   setupWebServer();
+  
+  fetchForecastIfNeeded();
 }
 
 void loop() {
