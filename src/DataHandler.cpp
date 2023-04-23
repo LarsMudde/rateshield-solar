@@ -93,15 +93,19 @@ bool shouldFetchForecast() {
   myTZ.setLocation(F(TIMEZONE));
   unsigned long currentTime = myTZ.now();
 
-  unsigned long lastFetchDateTime = doc["lastFetchDateTime"].as<unsigned long>();
+  const char* lastFetchDateTimeStr = doc["lastFetchDateTime"].as<const char*>();
+  struct tm lastFetchTm;
+  strptime(lastFetchDateTimeStr, "%Y-%m-%d %H:%M:%S", &lastFetchTm);
+  time_t lastFetchTimestamp = mktime(&lastFetchTm);
+
   unsigned long oneHour = 60 * 60 * 1000UL;
 
-  if (currentTime - lastFetchDateTime > oneHour) {
+  if (currentTime - lastFetchTimestamp > oneHour) {
     Serial.println("Data is more than 1 hour old.");
     return true;
   }
 
-  Serial.println("Data is up-to-date.");
+  Serial.println("Data is up-to-date enough.");
   return false;
 }
 
