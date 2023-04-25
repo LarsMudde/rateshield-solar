@@ -27,7 +27,7 @@ void setupWiFi() {
 }
 
 void setupTime() {
-  waitForSync(); // Remove the UTC.begin() line, keep waitForSync()
+  waitForSync();
   Serial.println("UTC: " + UTC.dateTime());
 
   Timezone myTZ;
@@ -49,16 +49,6 @@ void setupWebServer() {
   }
 }
 
-unsigned long lastSyncTime = 0;
-const unsigned long oneWeek = 7 * 24 * 60 * 60 * 1000UL;
-
-void syncTimeEveryWeek() {
-  if (millis() - lastSyncTime >= oneWeek) {
-    waitForSync();
-    lastSyncTime = millis();
-  }
-}
-
 void setup() {
   Serial.begin(115200);
   Serial.println("\nStarting");
@@ -69,5 +59,5 @@ void setup() {
 }
 
 void loop() {
-  syncTimeEveryWeek();
+  // The loop function remains empty as the ezTime library handles time synchronization automatically
 }
