@@ -1,12 +1,12 @@
-#ifndef DATAHANDLER_H
-#define DATAHANDLER_H
+#ifndef APICLIENT_H
+#define APICLIENT_H
 
+#include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 
 void fetchForecastIfNeeded();
 void getFromEndpoint();
 void readFromEEPROM(AsyncWebServerRequest* request);
-bool shouldFetchForecast();
 String readFile(const char *filename);
 
-#endif
+#endif // APICLIENT_H
