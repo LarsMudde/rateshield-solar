@@ -61,6 +61,11 @@ void syncTimeEveryWeek() {
 }
 
 void setup() {
+#ifdef BLUETOOTH_DISABLED
+  // Disable Bluetooth
+  btStop();
+#endif
+
   Serial.begin(115200);
   Serial.println("\nStarting");
 

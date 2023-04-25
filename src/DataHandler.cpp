@@ -2,10 +2,11 @@
 #include <HTTPClient.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
-#include "DataHandler.h"
-#include "Constants.h"
 #include <ArduinoJson.h>
 #include <ezTime.h>
+
+#include "DataHandler.h"
+#include "Constants.h"
 
 String addTimestampToJson(const String& apiData) {
   // Create a new JSON object to store the fetched data and timestamp
@@ -54,9 +55,28 @@ String readFile(const String& fileName) {
   return data;
 }
 
+
+String getEnergyPricesUrl() {
+  Timezone myTZ;
+  myTZ.setLocation(F(TIMEZONE));
+
+  // Calculate fromDate and tillDate here
+  time_t fromDate_time = myTZ.now();
+  time_t tillDate_time = myTZ.now() + 4 * 24 * 60 * 60; // 4 days ahead
+
+  String fromDate = myTZ.dateTime(fromDate_time, "Y-m-d\\TH:i:s.000\\Z");
+  String tillDate = myTZ.dateTime(tillDate_time, "Y-m-d\\TH:i:s.999\\Z");
+
+  String url = String(ENERGY_PRICES_BASE_URL) + "?fromDate=" + fromDate + "&tillDate=" + tillDate +
+               "&interval=" + String(INTERVAL) + "&usageType=1&inclBtw=" + String(INCL_BTW ? "true" : "false");
+
+  return url;
+}
+
 void getFromEndpoint() {
+  String url = getEnergyPricesUrl();
   HTTPClient http;
-  http.begin("https://jsonplaceholder.typicode.com/todos/1");
+  http.begin(url);
 
   int httpCode = http.GET();
   if (httpCode > 0) {
