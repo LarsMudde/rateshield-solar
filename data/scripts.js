@@ -10,7 +10,7 @@ async function saveConfig() {
   const config = {
     stroomToeslag: parseFloat(stroomToeslag),
     stroomBelastingen: parseFloat(stroomBelastingen),
-    tarief: parseFloat(tarief)
+    btwTarief: parseFloat(tarief)
   };
 
   const response = await fetch('/save-config', {
