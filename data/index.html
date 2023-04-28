@@ -8,26 +8,30 @@
   <script src="/scripts.js" defer></script>
 </head>
 <body>
-  <h1>RateShield Solar Configuration</h1>
-  <div id="date-time"></div>
+  <div class="container">
+    <h1>RateShield Solar Configuration</h1>
+    <div id="date-time"></div>
 
-  <div>
-    <label for="stroom-toeslag">Stroom toeslag:</label>
-    <input type="number" id="stroom-toeslag" step="0.00001" value="0.02118">
-  </div>
-  <div>
-    <label for="stroom-belastingen">Stroom belastingen:</label>
-    <input type="number" id="stroom-belastingen" step="0.00001" value="0.1524">
-  </div>
-  <div>
-    <label for="tarief">Tarief:</label>
-    <select id="tarief">
-      <option value="1.09">Laag tarief, 9%</option>
-      <option value="1.21">Hoog tarief, 21%</option>
-    </select>
-  </div>
+    <div class="input-field">
+      <label for="stroom-toeslag">Stroom toeslag:</label>
+      <input type="number" id="stroom-toeslag" step="0.00001" value="0.02118">
+    </div>
+    <div class="input-field">
+      <label for="stroom-belastingen">Stroom belastingen:</label>
+      <input type="number" id="stroom-belastingen" step="0.00001" value="0.1524">
+    </div>
+    <div class="input-field">
+      <label for="tarief">Tarief:</label>
+      <select id="tarief">
+        <option value="1.09">Laag tarief, 9%</option>
+        <option value="1.21" selected>Hoog tarief, 21%</option>
+      </select>
+    </div>
 
-  <button onclick="saveConfig()">Save</button>
-  <button onclick="readConfig()">Read Configuration</button>
+    <div class="button-container">
+      <button onclick="saveConfig()">Save</button>
+      <button onclick="readConfig()">Read Configuration</button>
+    </div>
+  </div>
 </body>
 </html>
