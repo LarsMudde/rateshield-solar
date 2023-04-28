@@ -14,12 +14,6 @@ AsyncDNSServer dnsServer;
 
 ESPAsync_WiFiManager* wifiManager;
 
-unsigned long lastInteractionTime = 0;
-
-void executeTask() {
-  // Your task implementation here
-}
-
 void setupFileSystem() {
   if (!SPIFFS.begin(true)) {
     Serial.println("An error has occurred while mounting SPIFFS");
@@ -55,35 +49,6 @@ void setupWebServer() {
   }
 }
 
-bool shouldSleep() {
-  unsigned long currentMillis = millis();
-  unsigned long elapsedTime = currentMillis - lastInteractionTime;
-  return elapsedTime >= IDLE_SLEEP_INTERVAL * 1000;
-}
-
-void goToSleep(int sleepTimeSeconds) {
-  esp_sleep_enable_timer_wakeup(sleepTimeSeconds * 1000000LL);
-  esp_deep_sleep_start();
-}
-
-void handleSleepAndTaskExecution() {
-  Timezone myTZ;
-  myTZ.setLocation(F(TIMEZONE));
-
-  int currentHour = myTZ.hour();
-
-  if (shouldSleep() && currentHour >= START_HOUR && currentHour <= END_HOUR) {
-    executeTask();
-    
-    int secondsToNextHour = 3600 - (myTZ.minute() * 60) - myTZ.second();
-    goToSleep(secondsToNextHour);
-  }
-}
-
-void loop() {
-  handleSleepAndTaskExecution();
-}
-
 void setup() {
   Serial.begin(115200);
   Serial.println("\nStarting");
@@ -91,9 +56,8 @@ void setup() {
   setupFileSystem();
   setupWiFi();
   setupWebServer();
+}
 
-  pinMode(GPIO_NUM_39, INPUT_PULLUP);
-  attachInterrupt(GPIO_NUM_39, [] {
-    lastInteractionTime = millis();
-  }, RISING);
+void loop() {
+  // The loop function remains empty as the ezTime library handles time synchronization automatically
 }
